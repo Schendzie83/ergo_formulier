@@ -161,7 +161,7 @@ export default function Dashboard() {
                   <div className="p-3 bg-red-50 rounded-lg group-hover:bg-red-100 transition-colors">
                     <FileText className="w-6 h-6 text-red-600" />
                   </div>
-                  <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex gap-2">
                     <Link 
                       href={`/builder/${form.id}`}
                       className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
