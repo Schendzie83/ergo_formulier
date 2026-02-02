@@ -22,6 +22,10 @@ export default function Home() {
             <p className="text-xl md:text-2xl font-light opacity-95 leading-relaxed">
               Maak op basis van het beantwoorden van enkele vragen unieke formulieren die passend zijn bij uw cliënt.
             </p>
+
+            <p className="text-base md:text-lg text-gray-200 mt-4 font-light italic">
+              * Vanwege het laden van de database kan de wachttijd oplopen tot 1 minuut.
+            </p>
             
             <div className="flex flex-wrap gap-4 pt-4">
               <Link 
