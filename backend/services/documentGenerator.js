@@ -4,6 +4,7 @@ const path = require('path');
 
 class DocumentGenerator {
   static async generate(form, answers) {
+    const FONT_FAMILY = "Avenir Next LT Pro";
     const children = [];
     
     // Title
@@ -14,13 +15,19 @@ class DocumentGenerator {
                 text: form.title,
                 bold: true,
                 size: 36, // 18pt
+                font: FONT_FAMILY
             }),
         ],
         heading: HeadingLevel.TITLE,
         spacing: { after: 200 },
       }),
       new Paragraph({
-        text: form.description || '',
+        children: [
+            new TextRun({
+                text: form.description || '',
+                font: FONT_FAMILY
+            })
+        ],
         spacing: { after: 400 },
       })
     );
@@ -105,7 +112,9 @@ class DocumentGenerator {
          return String(answer);
     };
 
-    // Helper: Build Rows Recursively
+
+
+    // Same recursive function, updated styles
     const buildSectionRows = (parentId, level = 0) => {
         const rows = [];
         const items = questionsByParent[parentId] || [];
@@ -114,25 +123,24 @@ class DocumentGenerator {
             if (!isVisible(item)) continue;
 
             // Determine style based on level
-            // Level 0: Direct under Main Section -> Size 28 (14pt)
-            // Level 1: Sub-question / nested -> Size 24 (12pt)
-            // Level 2+: Deeper -> Size 20 (10pt)
+            // User feedback: "Niveau 2 mag beetje kleiner, maar hoeft niet meer dikgedrukt"
+            // We interpret "Niveau 2" as the questions directly under the main section.
             
-            let fontSize = 28;
-            if (level === 1) fontSize = 24;
-            if (level >= 2) fontSize = 20;
+            let fontSize = 24; // 12pt (was 28/14pt)
+            if (level === 1) fontSize = 22; // 11pt
+            if (level >= 2) fontSize = 20; // 10pt
 
-            const isBold = true; 
+            const isBold = false; 
             const indentLevel = level * 200; 
 
             if (item.type === 'section') {
-                // Nested Section Header (Subtitle)
+                // Nested Section Header (Subtitle) -> Keep bold to distinguish?
                 rows.push(new TableRow({
                     children: [
                         new TableCell({
                             children: [
                                 new Paragraph({ 
-                                    children: [new TextRun({ text: item.text, bold: true, size: fontSize + 2 })], 
+                                    children: [new TextRun({ text: item.text, bold: true, size: fontSize + 2, font: FONT_FAMILY })], 
                                     indent: { left: indentLevel }
                                 })
                             ],
@@ -151,7 +159,7 @@ class DocumentGenerator {
                         new TableCell({
                             children: [
                                 new Paragraph({
-                                    children: [new TextRun({ text: item.text, bold: isBold, size: fontSize })],
+                                    children: [new TextRun({ text: item.text, bold: isBold, size: fontSize, font: FONT_FAMILY })],
                                     indent: { left: indentLevel }
                                 })
                             ],
@@ -160,7 +168,7 @@ class DocumentGenerator {
                         new TableCell({
                             children: [
                                 new Paragraph({
-                                    children: [new TextRun({ text: answerText, size: fontSize })]
+                                    children: [new TextRun({ text: answerText, size: fontSize, font: FONT_FAMILY })]
                                 })
                             ],
                             width: { size: 50, type: WidthType.PERCENTAGE }
@@ -180,7 +188,6 @@ class DocumentGenerator {
         if (item.type === 'section') {
              const tableRows = [];
              // Header for Main Section (Big Header)
-             // DEBUG: Color set to RED to verify deployment
              tableRows.push(new TableRow({
                  children: [
                      new TableCell({
@@ -190,7 +197,8 @@ class DocumentGenerator {
                                     new TextRun({ 
                                         text: item.text, 
                                         bold: true, 
-                                        size: 36 // 18pt
+                                        size: 36, // 18pt
+                                        font: FONT_FAMILY
                                     })
                                 ]
                              })
@@ -214,7 +222,7 @@ class DocumentGenerator {
             // Root Question
             children.push(
                 new Paragraph({
-                  text: item.text,
+                  children: [new TextRun({ text: item.text, font: FONT_FAMILY, size: 28, bold: true })], // Root questions still bold? Or implied Level 1? Let's keep distinct.
                   heading: HeadingLevel.HEADING_3, 
                   spacing: { before: 200, after: 100 },
                 })
@@ -227,7 +235,8 @@ class DocumentGenerator {
                         new TextRun({
                             text: ans || "__________________________________________________",
                             bold: !!ans,
-                            color: ans ? "000000" : "CCCCCC"
+                            color: ans ? "000000" : "CCCCCC",
+                            font: FONT_FAMILY
                         }),
                     ],
                 })
